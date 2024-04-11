@@ -1,7 +1,7 @@
 import argparse
 import json
 
-TYPE_TYPE = 'Z4'
+TYPE_Z_CODE = 'Z4'
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -13,13 +13,9 @@ def main():
 		objects = json.load(in_file)
 
 	codes_to_names = {}
-	for id_, obj in objects.items():
-		try:
-			if obj['value']['Z1K1'] == TYPE_TYPE:
-				codes_to_names[id_] = obj['label']
-		# Pesky Strings
-		except TypeError:
-			pass
+	for z_code, obj in objects.items():
+		if obj['type'] == TYPE_Z_CODE:
+			codes_to_names[z_code] = obj['label'].casefold()
 
 	names_to_codes = {v: k for k, v in codes_to_names.items()}
 	types = {'codes to names': codes_to_names, 'names to codes': names_to_codes}

@@ -4,6 +4,8 @@ import collections.abc
 import json
 import xml.etree.ElementTree as xmlet
 
+STRING_Z_CODE = 'Z6'
+TYPED_LIST_Z_CODE = 'Z881'
 ENGLISH_Z_CODE = 'Z1002'
 
 def main():
@@ -19,11 +21,20 @@ def main():
 		title = page.find('title').text
 		text = page.find('revision').find('text').text
 		obj_in = json.loads(text)
+		obj_out = {}
 		try:
-			obj_out = {'value': obj_in['Z2K2']}
+			# The value of a String is the string itself, rather than a dict like other objects
+			obj_value = obj_in['Z2K2']
+			if isinstance(obj_value, dict):
+				obj_out['type'] = obj_value['Z1K1']
+			elif isinstance(obj_value, str):
+				obj_out['type'] = STRING_Z_CODE
+			elif isinstance(obj_value, list):
+				obj_out['type'] = TYPED_LIST_Z_CODE
 			obj_out['label']: str | None = search_multilingual_text(obj_in['Z2K3'], args.language)
 			obj_out['aliases']: list[str] | None = search_multilingual_stringset(obj_in['Z2K4'], args.language)
 			obj_out['description']: str | None = search_multilingual_text(obj_in['Z2K5'], args.language)
+			obj_out['value'] = obj_in['Z2K2']
 			objects[obj_in['Z2K1']['Z6K1']] = obj_out
 		except KeyError:
 			pass
