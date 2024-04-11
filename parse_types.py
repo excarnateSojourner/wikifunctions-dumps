@@ -2,6 +2,7 @@ import argparse
 import json
 
 TYPE_Z_CODE = 'Z4'
+TYPED_LIST_Z_CODE = 'Z881'
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -14,7 +15,9 @@ def main():
 
 	codes_to_names = {}
 	for z_code, obj in objects.items():
-		if obj['type'] == TYPE_Z_CODE:
+		# For some reason Typed list is used as a type even though it is a function.
+		# It is a fundamental built-in function, so hopefully there will not be many more of these in the future.
+		if obj['type'] == TYPE_Z_CODE or z_code == TYPED_LIST_Z_CODE:
 			codes_to_names[z_code] = obj['label'].casefold()
 
 	names_to_codes = {v: k for k, v in codes_to_names.items()}
