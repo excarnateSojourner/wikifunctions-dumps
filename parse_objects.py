@@ -4,21 +4,22 @@ import collections.abc
 import json
 import xml.etree.ElementTree as xmlet
 
+ENGLISH_Z_CODE = 'Z1002'
+
 def main():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('input_path')
-	parser.add_argument('output_path')
-	parser.add_argument('language', default='Z1002')
+	parser.add_argument('pages_file', help='The name of the XML file to read the objects from. Called "pages-meta-current.xml" in the database dumps.')
+	parser.add_argument('output_file', help='The name of the JSON file to write the modified objects to (as a JSON object). The file will be created if it does not exist, but any directories must already exist.')
+	parser.add_argument('-l', '--language', default=ENGLISH_Z_CODE, help='The Z code of the language to select labels, descriptions, and aliases for. Defaults to English.')
 	args = parser.parse_args()
 
-	doc_root = xmlet.parse(args.input_path).getroot()
+	doc_root = xmlet.parse(args.pages_file).getroot()
 	objects: dict[str, dict] = {}
 	for page in doc_root.findall('page'):
 		title = page.find('title').text
 		text = page.find('revision').find('text').text
 		obj_in = json.loads(text)
 		try:
-			# Normal object
 			obj_out = {'value': obj_in['Z2K2']}
 			obj_out['label']: str | None = search_multilingual_text(obj_in['Z2K3'], args.language)
 			obj_out['aliases']: list[str] | None = search_multilingual_stringset(obj_in['Z2K4'], args.language)
@@ -27,7 +28,7 @@ def main():
 		except KeyError:
 			pass
 
-	with open(args.output_path, 'w', encoding='utf-8') as out_file:
+	with open(args.output_file, 'w', encoding='utf-8') as out_file:
 		json.dump(objects, out_file, ensure_ascii=False, indent='\t')
 
 
