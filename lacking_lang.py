@@ -2,31 +2,41 @@ import argparse
 import collections
 import json
 
-TYPE_STRING = 'Z6'
-
 def main():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('input_path')
-	parser.add_argument('output_path_prefix')
-	parser.add_argument('-p', '--property', default='label')
+	parser.add_argument('objects_file', help='The name of the JSON file containing the objects to check (produced by parse_objects).')
+	parser.add_argument('types_file', help='The name of the JSON file describing types, as produced by parse_types.')
+	parser.add_argument('output', help='If --type is given, this is the file to write the list of objects to. Otherwise this is prepended to the object types to generate the names of the files which the lists of objects will be written to. The output file(s) will be created if they do not exist, but any directories must already exist.')
+	parser.add_argument('-f', '--field', default='label', choices=['label', 'description', 'aliases'], help='The name of the field to check. Defaults to "%(default)s".')
+	parser.add_argument('-t', '--type', help='If given only fields of objects of the specified type will be checked. Given as the name of the type, not the Z code. Requires --types-file.')
 	args = parser.parse_args()
 
-	with open(args.input_path, encoding='utf-8') as in_file:
-		objects = json.load(in_file)
+	lackers = objects_lacking_lang(args.objects_file, args.types_file, args.field)
+
+	if args.type:
+		with open(args.output, 'w', encoding='utf-8') as out_file:
+			for lacker_code in lackers[args.type.casefold()]:
+				print(f'* [[{lacker_code}]]', file=out_file)
+
+	# no type specified
+	else:
+		for type_name, lacker_codes in lackers.items():
+			with open(f'{args.output}{type_name.replace(" ", "_")}.wiki', 'w', encoding='utf-8') as out_file:
+				for lacker_code in lacker_codes:
+					print(f'* [[{lacker_code}]]', file=out_file)
+
+def objects_lacking_lang(objects_file: str, types_file: str, field: str = 'label') -> dict[str, list[str]]:
+	with open(objects_file, encoding='utf-8') as in_file:
+		objects: dict[str, dict] = json.load(in_file)
+
+	with open(types_file, encoding='utf-8') as in_file:
+		type_codes_to_names: dict[str, str] = json.load(in_file)['codes to names']
 
 	lackers = collections.defaultdict(list)
-	for id_, obj in objects.items():
-		if not obj[args.property]:
-			try:
-				lackers[obj['value']['Z1K1']].append(id_)
-			# The value of a String is just the string itself (not a dict)
-			except TypeError:
-				lackers[TYPE_STRING].append(id_)
-
-	for type_, ids in lackers.items():
-		with open(f'{args.output_path_prefix}{type_}.wiki', 'w', encoding='utf-8') as out_file:
-			for id_ in ids:
-				print(f'* [[{id_}]]', file=out_file)
+	for z_code, obj in objects.items():
+		if not obj[field]:
+			lackers[type_codes_to_names[obj['type']]].append(z_code)
+	return lackers
 
 if __name__ == '__main__':
 	main()
