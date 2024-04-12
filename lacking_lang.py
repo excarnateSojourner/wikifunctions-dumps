@@ -2,6 +2,8 @@ import argparse
 import collections
 import json
 
+import parse_objects
+
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('objects_file', help='The name of the JSON file containing the objects to check (produced by parse_objects).')
@@ -26,8 +28,7 @@ def main():
 					print(f'* [[{lacker_code}]]', file=out_file)
 
 def objects_lacking_lang(objects_file: str, types_file: str, field: str = 'label') -> dict[str, list[str]]:
-	with open(objects_file, encoding='utf-8') as in_file:
-		objects: dict[str, dict] = json.load(in_file)
+	objects = parse_objects.load(objects_file)
 
 	with open(types_file, encoding='utf-8') as in_file:
 		type_codes_to_names: dict[str, str] = json.load(in_file)['codes to names']

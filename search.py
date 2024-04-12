@@ -1,6 +1,8 @@
 import argparse
 import json
 
+import parse_objects
+
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('objects_file', help='The name of the JSON file containing the objects to search through, as produced by parse_objects.')
@@ -8,8 +10,7 @@ def main():
 	parser.add_argument('-m', '--max-results', default=10, type=int, help='The maximum number of results to display. Defaults to %(default)s.')
 	args = parser.parse_args()
 
-	with open(args.objects_file, encoding='utf-8') as in_file:
-		objects = json.load(in_file)
+	objects = parse_objects.load(args.objects_file)
 
 	query = args.query.casefold()
 	results = []

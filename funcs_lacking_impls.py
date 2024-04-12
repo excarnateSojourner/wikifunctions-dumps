@@ -12,8 +12,7 @@ def main():
 	if args.impl_lang:
 		args.impl_lang = args.impl_lang.casefold()
 
-	with open(args.objects_file, encoding='utf-8') as in_file:
-		objects = json.load(in_file)
+	objects = parse_objects.load(args.objects_file)
 
 	with open(args.output_file, 'w', encoding='utf-8') as out_file:
 		for func_code, func_obj in objects.items():

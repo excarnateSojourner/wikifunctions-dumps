@@ -42,6 +42,9 @@ def main():
 	with open(args.output_file, 'w', encoding='utf-8') as out_file:
 		json.dump(objects, out_file, ensure_ascii=False, indent='\t')
 
+def load(objects_file: str) -> dict[str, dict]:
+	with open(objects_file, encoding='utf-8') as in_file:
+		return json.load(in_file)
 
 def skip_first(able: collections.abc.Iterable) -> collections.abc.Iterator:
 	'''

@@ -1,6 +1,8 @@
 import argparse
 import json
 
+import parse_objects
+
 TYPE_Z_CODE = 'Z4'
 TYPED_LIST_Z_CODE = 'Z881'
 
@@ -10,8 +12,7 @@ def main():
 	parser.add_argument('output_file', help='The name of the JSON file to write the types to (as a JSON object). The file will be created if it does not exist, but any directories must already exist.')
 	args = parser.parse_args()
 
-	with open(args.objects_file, encoding='utf-8') as in_file:
-		objects = json.load(in_file)
+	objects = parse_objects.load(args.objects_file)
 
 	codes_to_names = {}
 	for z_code, obj in objects.items():
