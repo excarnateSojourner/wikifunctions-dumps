@@ -89,3 +89,14 @@ This script is **in**efficient, so it will probably be prohibitively slow if you
 
 #### Output
 Results are shown with their Z codes, labels, aliases, and descriptions (where these exist). The results with the sortest labels will be shown first.
+
+## `unimpled_funcs`
+This script generates a list of functions that have no implementations, or that have no implementations in a given language. It excludes functions which have relevant disconnected implementations.
+
+### Inputs
+#### Required
+1. `objects_file`: The name of the JSON file containing functions and implementations to search through, as produced by `parse_objects`. If `--impl-lang` is given then this file must also contain programming languages.
+1. `output_file`: The name of the MediaWiki markup file to write the list of relevant function Z codes to.
+
+#### Optional
+1. `--impl-lang`: The name of a programming language. If given, output functions that do not have an implementation in this language, even if they do have implementations in other languages.

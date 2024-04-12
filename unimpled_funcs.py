@@ -20,11 +20,11 @@ def main():
 				if not func_has_imp(func_code, func_obj, objects, impl_lang):
 					print(f'* [[{func_code}]]', file=out_file)
 
-def func_has_impl(func_code: str, func_obj: dict, objects: str, impl_lang: str | None = None):
+def func_has_impl(func_code: str, objects: str, impl_lang: str | None = None):
 	# See if the function knows it has implementations
-	for impl_code in parse_objects.skip_first(func_obj['value']['Z8K4']):
+	for impl_code in parse_objects.skip_first(objects[func_code]['value']['Z8K4']):
 		try:
-			if impl_is_relevant_lang(objects[impl_code], args.impl_lang, objects):
+			if impl_is_relevant_lang(objects[impl_code], impl_lang, objects):
 				return True
 		# Built-in or otherwise fundamental implementations may not have all keys.
 		# See for example Z201.
@@ -33,7 +33,7 @@ def func_has_impl(func_code: str, func_obj: dict, objects: str, impl_lang: str |
 
 	# Check for disconnected implementations
 	for impl_obj in objects.values():
-		if impl_obj['type'] == 'Z14' and impl_obj['value']['Z14K1'] == func_code and impl_is_relevant_lang(impl_obj, args.impl_lang, objects):
+		if impl_obj['type'] == 'Z14' and impl_obj['value']['Z14K1'] == func_code and impl_is_relevant_lang(impl_obj, impl_lang, objects):
 			return True
 
 	return False
