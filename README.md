@@ -100,3 +100,14 @@ This script generates a list of functions that have no implementations, or that 
 
 #### Optional
 1. `--impl-lang`: The name of a programming language. If given, output functions that do not have an implementation in this language, even if they do have implementations in other languages.
+
+## `impled_untested_funcs.py`
+This script generates a list of functions that have one or more implementations, or that are implemented in a given language, but do not yet have any test cases. Disconnected implementations and test cases are treated as valid (just the same as connected ones).
+
+### Inputs
+#### Required
+1. `objects_file`: The name of the JSON file containing functions, implementations, and test cases to search through, as produced by `parse_objects`. If `--impl-lang` is given then this file must also contain programming languages.
+1. `output_file`: The name of the MediaWiki markup file to write the list of relevant function Z codes to.
+
+#### Optional
+1. `--impl-lang`: The name of a programming language. If given, output is restricted to functions that have an implementation in this language, regardless of implementations in other languages.
