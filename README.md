@@ -60,7 +60,7 @@ A JSON object containing two sub-objects:
 * `names to codes`: Maps types' labels to their Z codes.
 
 ## `lacking_lang`
-This script generates lists of objects that lack labels, descriptions, or aliases in a given language.
+This script generates lists of objects that lack labels, descriptions, or aliases in a given language. Implementations and test cases will only be listed if their associated function is labelled.
 
 This script can run stand-alone or be used from another script.
 

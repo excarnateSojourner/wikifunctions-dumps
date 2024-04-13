@@ -4,6 +4,9 @@ import json
 
 import parse_objects
 
+IMPLEMENTATION_Z_CODE = 'Z14'
+TEST_CASE_Z_CODE = 'Z20'
+
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('objects_file', help='The name of the JSON file containing the objects to check (produced by parse_objects).')
@@ -36,6 +39,14 @@ def objects_lacking_lang(objects_file: str, types_file: str, field: str = 'label
 	lackers = collections.defaultdict(list)
 	for z_code, obj in objects.items():
 		if not obj[field]:
+			# If implementation or test case and associated function does not have a label, skip
+			try:
+				if (obj['type'] == IMPLEMENTATION_Z_CODE and not objects[obj['value']['Z14K1']]['label']) or (obj['type'] == TEST_CASE_Z_CODE and not objects[obj['value']['Z20K1']]['label']):
+					continue
+			# Some built-in functions do not have the usual fields, meaning they do not appear in parsed objects and their implementations and test cases won't be able to look them up here.
+			# We assume these functions are labelled.
+			except KeyError:
+				pass
 			lackers[type_codes_to_names[obj['type']]].append(z_code)
 	return lackers
 
