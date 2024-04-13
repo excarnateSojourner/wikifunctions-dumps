@@ -1,6 +1,6 @@
 import argparse
 
-import funcs_lacking_impls
+import unimpled_funcs
 import parse_objects
 
 def main():
@@ -16,7 +16,7 @@ def main():
 
 	with open(args.output_file, 'w', encoding='utf-8') as out_file:
 		for func_code, func_obj in objects.items():
-			if func_obj['type'] == 'Z8' and funcs_lacking_impls.func_has_impl(func_code, objects, args.impl_lang) and not func_has_test(func_code, objects):
+			if func_obj['type'] == 'Z8' and unimpled_funcs.func_has_impl(func_code, objects, args.impl_lang) and not func_has_test(func_code, objects):
 				print(f'* [[{func_code}]]', file=out_file)
 
 def func_has_test(func_code: str, objects: dict[str, dict]) -> bool:
